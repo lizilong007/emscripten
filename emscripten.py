@@ -2273,8 +2273,13 @@ def finalize_wasm(temp_files, infile, outfile, memfile, DEBUG):
   if shared.Settings.SIDE_MODULE:
     cmd.append('--side-module')
   else:
-    # Global base is used to calulate the size of the static data segment.  The
-    # value should match the --global-base passed to lld in Building.link_lld()
+    # --global-base is used by wasm-emscripten-finalize to calculate the size
+    # of the static data used.  The argument we supply here needs to match the
+    # global based used by lld (see Building.link_lld).  For relocatable this is
+    # zero for the global base although at runtime __memory_base is used.
+    # For non-relocatable output we used shared.Settings.GLOBAL_BASE.
+    # TODO(sbc): Can we remove this argument infer this from the segment
+    # initializer?
     if shared.Settings.RELOCATABLE:
       cmd.append('--global-base=0')
     else:
