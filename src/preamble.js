@@ -1032,14 +1032,19 @@ Module['asm'] = function(global, env, providedBuffer) {
 #endif // WASM_BACKEND
     'element': 'anyfunc'
   });
+  // With the wasm backend __memory_base and __table_base and only needed for
+  // relocatable output.
+#if RELOCATABLE || !WASM_BACKEND
   env['__memory_base'] = {{{ GLOBAL_BASE }}}; // tell the memory segments where to place themselves
 #if WASM_BACKEND
   // We reserve slot 0 in the table for the NULL function pointer.
   // This means the __table_base for the main module (even in dynamic linking)
-  // is alwasy 1.
+  // is always 1.
   env['__table_base'] = 1;
 #else
-  env['__table_base'] = 0; // table starts at 0 by default (even in dynamic linking, for the main module)
+  // table starts at 0 by default (even in dynamic linking, for the main module)
+  env['__table_base'] = 0;
+#endif
 #endif
 
   var exports = createWasm(env);

@@ -1328,9 +1328,9 @@ int f() {
     run_process([PYTHON, EMCC] + args + libs)
     self.assertContained('result: 42', run_js('a2.out.js'))
 
-  # The fastcomp path will deliberatly ignore duplicate input file in order
-  # to allow "libA.so" on the command line twice. The is not realy .so support
-  # and the .so files are reallly bitcode.
+  # The fastcomp path will deliberately ignore duplicate input files in order
+  # to allow "libA.so" on the command line twice. The is not really .so support
+  # and the .so files are really bitcode.
   @no_wasm_backend('tests legacy .so linking behviour')
   @needs_dlfcn
   def test_redundant_link(self):
@@ -3862,12 +3862,11 @@ int main()
       else:
         self.assertNotContained(warning, err)
 
-  @no_wasm_backend('uses SIDE_MODULE')
   def test_side_module_without_proper_target(self):
     # SIDE_MODULE is only meaningful when compiling to wasm (or js+wasm)
     # otherwise, we are just linking bitcode, and should show an error
     for wasm in [0, 1]:
-      if self.is_wasm_backend():
+      if self.is_wasm_backend() and not wasm:
         continue
       print(wasm)
       process = run_process([PYTHON, EMCC, path_from_root('tests', 'hello_world.cpp'), '-s', 'SIDE_MODULE=1', '-o', 'a.so', '-s', 'WASM=%d' % wasm], stderr=PIPE, check=False)
